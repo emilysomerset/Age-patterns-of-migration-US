@@ -24,9 +24,9 @@ parameters {
   matrix[A,R] delta1; //matrix of deviations
   matrix[T,R] delta2; //matrix of deviations
   vector[N] delta3; //matrix of deviations
-  real<lower=0> sigma1[R]; //sd of delta1
-  real<lower=0> sigma2[R]; //sd of delta2
-  real<lower=0> sigma3; //sd of delta2
+  real<lower=0> sigma1; //sd of delta1
+  real<lower=0> sigma2; //sd of delta2
+  // real<lower=0> sigma3; //sd of delta2
 }
 
 transformed parameters{
@@ -65,8 +65,8 @@ model {
         target += normal_lpdf(delta2[t, 1:R]|delta2[(t-1),1:R], sigma2);  //random walk on time
       }
     }
-    target += normal_lpdf(sigma3|0,1);
-    target += normal_lpdf(delta3|0,sigma3);
+    // target += normal_lpdf(sigma3|0,1);
+    target += normal_lpdf(delta3|0,0.3);
 }
   
   
@@ -89,7 +89,7 @@ generated_rate[i] = y_p[i]/exp(pop[i]);
 // predicting year 2020
 pred_fixed_eff = alpha + pred_age*tau + pred_region*gamma;
 for (i in 1:(A*R)){
- pred_rate[i] = pred_fixed_eff[i]+ delta1[pred_age_vec[i],pred_region_vec[i]] + normal_rng(delta2[T,pred_region_vec[i]],sigma2[pred_region_vec[i]]) + normal_rng(0,sigma3);
+ pred_rate[i] = pred_fixed_eff[i]+ delta1[pred_age_vec[i],pred_region_vec[i]] + normal_rng(delta2[T,pred_region_vec[i]],sigma2) + normal_rng(0,0.3);
  }
 }
 
